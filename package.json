@@ -1,6 +1,6 @@
 {
   "name": "@flitz/body",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "flitz middleware for parsing and handling request bodies.",
   "private": false,
   "main": "lib/index.js",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/flitz-js/flitz.git"
+    "url": "git+https://github.com/flitz-js/body.git"
   },
   "keywords": [
     "flitz",
@@ -34,9 +34,9 @@
   "author": "Marcel Joachim Kloubert <marcel.kloubert@gmx.net>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/flitz-js/flitz/issues"
+    "url": "https://github.com/flitz-js/body/issues"
   },
-  "homepage": "https://github.com/flitz-js/flitz#readme",
+  "homepage": "https://github.com/flitz-js/body#readme",
   "devDependencies": {
     "@types/node": "^10.17.27",
     "@typescript-eslint/eslint-plugin": "^3.6.1",

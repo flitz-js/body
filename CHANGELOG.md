@@ -1,6 +1,6 @@
 # @flitz/body
 
-## 0.2.1
+## 0.2.2
 
 * add `string()` parser
 
