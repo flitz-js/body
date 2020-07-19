@@ -1,6 +1,6 @@
 {
   "name": "@flitz/body",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "flitz middleware for parsing and handling request bodies.",
   "private": false,
   "main": "lib/index.js",
@@ -45,6 +45,7 @@
     "@typescript-eslint/parser": "^3.6.1",
     "del-cli": "^3.0.1",
     "eslint": "^7.5.0",
+    "eslint-config-flitz": "0.1.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jsdoc": "^30.0.0",
     "eslint-plugin-no-null": "^1.0.2",
