@@ -44,9 +44,7 @@ const run = async () => {
   const app = flitz();
 
   app.post('/', { use: [ body() ] }, async (req, res) => {
-    const body = req.body as Buffer;
-
-    res.write('Your body as string: ' + body.toString('utf8'));
+    res.write('Your body as string: ' + (body as Buffer).toString('utf8'));
     res.end();
   });
 
@@ -68,7 +66,7 @@ const run = async () => {
   app.post('/', { use: [ json() ] }, async (req, res) => {
     const body = req.body as any;
 
-    res.write('Your body as JSON string: ' + JSON.stringify(req.body, null, 2));
+    res.write('Your body as JSON string: ' + JSON.stringify(body, null, 2));
     res.end();
   });
 
@@ -88,9 +86,9 @@ const run = async () => {
   const app = flitz();
 
   app.post('/', { use: [ string() ] }, async (req, res) => {
-    const body = req.body as any;
+    const body = req.body as string;
 
-    res.write('Your body as UTF-8 string: ' + req.body);
+    res.write('Your body as UTF-8 string: ' + body);
     res.end();
   });
 
