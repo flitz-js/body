@@ -78,6 +78,28 @@ const run = async () => {
 run();
 ```
 
+### String
+
+```typescript
+import flitz from 'flitz';
+import { string } from '@flitz/body';
+
+const run = async () => {
+  const app = flitz();
+
+  app.post('/', { use: [ string() ] }, async (req, res) => {
+    const body = req.body as any;
+
+    res.write('Your body as UTF-8 string: ' + req.body);
+    res.end();
+  });
+
+  await app.listen(3000);
+};
+
+run();
+```
+
 ## TypeScript
 
 TypeScript is optionally supported. The module contains its own [definition files](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html).

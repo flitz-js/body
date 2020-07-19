@@ -1,6 +1,6 @@
 {
   "name": "@flitz/body",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "flitz middleware for parsing and handling request bodies.",
   "private": false,
   "main": "lib/index.js",
@@ -21,16 +21,14 @@
     "url": "git+https://github.com/flitz-js/flitz.git"
   },
   "keywords": [
-    "http",
-    "https",
-    "http2",
-    "server",
-    "micro",
-    "microservice",
-    "tiny",
-    "lightweight",
-    "fast",
-    "node",
+    "flitz",
+    "middleware",
+    "body",
+    "parser",
+    "binary",
+    "buffer",
+    "json",
+    "string",
     "typescript"
   ],
   "author": "Marcel Joachim Kloubert <marcel.kloubert@gmx.net>",

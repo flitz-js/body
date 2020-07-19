@@ -38,7 +38,7 @@ export function body(): Middleware {
 
 /**
  * Creates a new middleware that reads the complete
- * request body and writes the data as JSON objct
+ * request body and writes the data as JSON object
  * to 'body' property of request context.
  * 
  * @returns {Middleware} The new middleware.
@@ -48,6 +48,21 @@ export function json(): Middleware {
     const data = await readStream(req);
 
     req.body = data.length ? JSON.parse(data.toString('utf8')) : null;
+
+    next();
+  };
+}
+
+/**
+ * Creates a new middleware that reads the complete
+ * request body and writes the data as string
+ * to 'body' property of request context.
+ * 
+ * @returns {Middleware} The new middleware.
+ */
+export function string(): Middleware {
+  return async (req, res, next) => {
+    req.body = (await readStream(req)).toString('utf8');
 
     next();
   };
