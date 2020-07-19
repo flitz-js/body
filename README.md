@@ -2,7 +2,7 @@
 
 # @flitz/body
 
-A body parser and handler middleware for [flitz](https://github.com/flitz-js/flitz).
+> A body parser and handler middleware for [flitz](https://github.com/flitz-js/flitz).
 
 ## Install
 

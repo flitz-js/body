@@ -1,30 +1,11 @@
 {
-    "compilerOptions": {
-      "allowUnreachableCode": false,
-      "declaration": true,
-      "emitDecoratorMetadata": true,
-      "esModuleInterop": true,
-      "experimentalDecorators": true,
-      "lib": [
-        "es2017"
-      ],
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "newLine": "lf",
-      "noUnusedLocals": true,
-      "outDir": "lib",
-      "pretty": false,
-      "removeComments": false,
-      "resolveJsonModule": true,
-      "rootDir": "src",
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "strict": true,
-      "stripInternal": true,
-      "target": "es2017"
-    },
-    "exclude": [
-      "node_modules",
-      "./src/sandbox"
-    ]
-  }
+  "extends": "@flitz/dev-config",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src"
+  },
+  "exclude": [
+    "node_modules",
+    "./src/sandbox"
+  ]
+}
