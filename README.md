@@ -23,8 +23,9 @@ const body = require('@flitz/body');
 const run = async () => {
   const app = flitz();
 
-  app.post('/', { use: [ body() ] }, async (req, res) => {
-    res.write('Your body as string: ' + req.body.toString('utf8'));
+  //             👇👇👇
+  app.post('/', [ body() ], async (req, res) => {
+    res.write('Your body as string from buffer: ' + req.body.toString());
     res.end();
   });
 
@@ -43,8 +44,9 @@ import { body } from '@flitz/body';
 const run = async () => {
   const app = flitz();
 
-  app.post('/', { use: [ body() ] }, async (req, res) => {
-    res.write('Your body as string: ' + (body as Buffer).toString('utf8'));
+  //             👇👇👇
+  app.post('/', [ body() ], async (req, res) => {
+    res.write('Your body as string from buffer: ' + req.body.toString());
     res.end();
   });
 
@@ -63,10 +65,30 @@ import { json } from '@flitz/body';
 const run = async () => {
   const app = flitz();
 
-  app.post('/', { use: [ json() ] }, async (req, res) => {
-    const body = req.body as any;
+  //             👇👇👇
+  app.post('/', [ json() ], async (req, res) => {
+    res.write('Your body as JSON object: ' + JSON.stringify(req.body, null, 2));
+    res.end();
+  });
 
-    res.write('Your body as JSON string: ' + JSON.stringify(body, null, 2));
+  await app.listen(3000);
+};
+
+run();
+```
+
+### Form
+
+```typescript
+import flitz from 'flitz';
+import { form } from '@flitz/body';
+
+const run = async () => {
+  const app = flitz();
+
+  //             👇👇👇
+  app.post('/', [ form() ], async (req, res) => {
+    res.write('Your body as key / value pair object: ' + JSON.stringify(req.body, null, 2));
     res.end();
   });
 
@@ -85,10 +107,9 @@ import { string } from '@flitz/body';
 const run = async () => {
   const app = flitz();
 
-  app.post('/', { use: [ string() ] }, async (req, res) => {
-    const body = req.body as string;
-
-    res.write('Your body as UTF-8 string: ' + body);
+  //              👇👇👇
+  app.post('/', [ string() ], async (req, res) => {
+    res.write('Your body as UTF-8 string: ' + req.body);
     res.end();
   });
 
@@ -96,6 +117,15 @@ const run = async () => {
 };
 
 run();
+```
+
+## Maximum size
+
+```typescript
+//                      👇👇👇
+app.post('/', [ body({ maxLength: 128 * 1024 * 1024 }) ], async (req, res) => {
+  // your code here
+});
 ```
 
 ## TypeScript

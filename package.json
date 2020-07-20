@@ -1,6 +1,6 @@
 {
   "name": "@flitz/body",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "flitz middleware for parsing and handling request bodies.",
   "private": false,
   "main": "lib/index.js",

@@ -1,6 +1,6 @@
 # @flitz/body
 
-## 0.5.0
+## 0.5.1
 
 * plugin requires at least [flitz 0.8.0+](https://github.com/flitz-js/flitz) now
 * can define `maxLength` property for parsers now
