@@ -30,11 +30,11 @@ export interface BodyOptions {
   /**
    * Defines the maximum size of the body, in bytes.
    */
-  maxLength?: CanBeNil<number>;
+  max?: CanBeNil<number>;
   /**
    * A custom handler, to tell the client, that the body is too big.
    */
-  onMaxLengthReached?: CanBeNil<RequestHandler>;
+  onMaxReached?: CanBeNil<RequestHandler>;
 }
 
 /**
@@ -67,11 +67,11 @@ export interface StringOptions extends BodyOptions {
 export function body(options?: BodyOptions): Middleware {
   return withEntityTooLarge(async (req, res, next) => {
     req.body = await readStream(req, {
-      maxLength: options?.maxLength
+      max: options?.max
     });
 
     next();
-  }, options?.onMaxLengthReached);
+  }, options?.onMaxReached);
 }
 
 /**
@@ -87,12 +87,12 @@ export function form(options?: FormOptions): Middleware {
   return withEntityTooLarge(async (req, res, next) => {
     req.body = querystring.parse(
       (await readStream(req, {
-        maxLength: options?.maxLength
+        max: options?.max
       })).toString('utf8')
     );
 
     next();
-  }, options?.onMaxLengthReached);
+  }, options?.onMaxReached);
 }
 
 /**
@@ -107,13 +107,13 @@ export function form(options?: FormOptions): Middleware {
 export function json(options?: JsonOptions): Middleware {
   return withEntityTooLarge(async (req, res, next) => {
     const data = await readStream(req, {
-      maxLength: options?.maxLength
+      max: options?.max
     });
 
     req.body = data.length ? JSON.parse(data.toString('utf8')) : null;
 
     next();
-  }, options?.onMaxLengthReached);
+  }, options?.onMaxReached);
 }
 
 /**
@@ -128,20 +128,20 @@ export function json(options?: JsonOptions): Middleware {
 export function string(options?: StringOptions): Middleware {
   return withEntityTooLarge(async (req, res, next) => {
     req.body = (await readStream(req, {
-      maxLength: options?.maxLength
+      max: options?.max
     })).toString('utf8');
 
     next();
-  }, options?.onMaxLengthReached);
+  }, options?.onMaxReached);
 }
 
 function withEntityTooLarge(
   action: (request: Request, response: Response, next: NextFunction) => Promise<void>,
-  onEntityTooLarge: CanBeNil<RequestHandler>
+  onMaxReached: CanBeNil<RequestHandler>
 ): Middleware {
-  if (!onEntityTooLarge) {
+  if (!onMaxReached) {
     // default handler
-    onEntityTooLarge = async (req, res) => {
+    onMaxReached = async (req, res) => {
       if (!res.headersSent) {
         res.writeHead(413);
       }
@@ -155,7 +155,7 @@ function withEntityTooLarge(
       await action(req, res, next);
     } catch (err) {
       if (err instanceof EntityTooLargeError) {
-        await onEntityTooLarge!(req, res);
+        await onMaxReached!(req, res);
       } else {
         throw err;
       }

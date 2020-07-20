@@ -28,7 +28,7 @@ export interface ReadStreamOptions {
   /**
    * Defines the maximum size for the stream, in bytes.
    */
-  maxLength?: CanBeNil<number>;
+  max?: CanBeNil<number>;
 }
 
 /**
@@ -40,22 +40,22 @@ export interface ReadStreamOptions {
  * @returns {Promise<Buffer>} The promise with the read data.
  */
 export function readStream(stream: NodeJS.ReadableStream, options?: CanBeNil<ReadStreamOptions>): Promise<Buffer> {
-  const maxLength = options?.maxLength;
-  if (maxLength) {
-    if (typeof maxLength !== 'number') {
-      throw new TypeError('options.maxLength must be a number');
+  const max = options?.max;
+  if (max) {
+    if (typeof max !== 'number') {
+      throw new TypeError('options.max must be a number');
     }
 
-    if (maxLength < 0) {
-      throw new TypeError('options.maxLength must be a greater than or equal 0');
+    if (max < 0) {
+      throw new TypeError('options.max must be a greater than or equal 0');
     }
   }
 
   let concatData: (data: Buffer, chunk: Buffer) => Buffer;
-  if (maxLength) {
+  if (max) {
     // with max length
     concatData = (d, c) => {
-      if (d.length + c.length > maxLength) {
+      if (d.length + c.length > max) {
         throw new EntityTooLargeError();
       }
 

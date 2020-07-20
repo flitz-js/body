@@ -1,5 +1,9 @@
 # @flitz/body
 
+## 0.6.0
+
+* [BREAKING CHANGE]: `maxLength` => `max`
+
 ## 0.5.1
 
 * plugin requires at least [flitz 0.8.0+](https://github.com/flitz-js/flitz) now

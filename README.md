@@ -122,8 +122,8 @@ run();
 ## Maximum size
 
 ```typescript
-//                      👇👇👇
-app.post('/', [ body({ maxLength: 128 * 1024 * 1024 }) ], async (req, res) => {
+//                    👇👇👇 (128 MB)
+app.post('/', [ body({ may: 128 * 1024 * 1024 }) ], async (req, res) => {
   // your code here
 });
 ```
