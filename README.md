@@ -123,7 +123,7 @@ run();
 
 ```typescript
 //                    👇👇👇 (128 MB)
-app.post('/', [ body({ may: 128 * 1024 * 1024 }) ], async (req, res) => {
+app.post('/', [ body({ max: 128 * 1024 * 1024 }) ], async (req, res) => {
   // your code here
 });
 ```
