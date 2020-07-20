@@ -1,5 +1,12 @@
 # @flitz/body
 
+## 0.5.0
+
+* plugin requires at least [flitz 0.8.0+](https://github.com/flitz-js/flitz) now
+* can define `maxLength` property for parsers now
+* add `form()` middleware
+* `body` property is of type `any` now
+
 ## 0.4.0
 
 * update donation links to [open collective](https://opencollective.com/flitz) and [PayPal](https://paypal.me/MarcelKloubert)

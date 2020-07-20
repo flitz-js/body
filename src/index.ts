@@ -26,6 +26,7 @@ exports = module.exports = function () {
   return body.apply(null, arguments as any);
 };
 
+export * from './errors';
 export * from './parsers';
 export * from './streams';
 

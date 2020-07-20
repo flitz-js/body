@@ -18,13 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import flitz from 'flitz';
-
-declare module 'flitz' {
-  interface Request {
-    /**
-     * The body, if parsed.
-     */
-    body?: any;
-  }
+/**
+ * Describes an 'entity too large' error.
+ */
+export class EntityTooLargeError extends Error {
 }

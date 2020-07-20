@@ -18,14 +18,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import { CanBeNil } from 'flitz';
+import { EntityTooLargeError } from './errors';
+
+/**
+ * Options for 'readStream()' function.
+ */
+export interface ReadStreamOptions {
+  /**
+   * Defines the maximum size for the stream, in bytes.
+   */
+  maxLength?: CanBeNil<number>;
+}
+
 /**
  * Reads all data from a stream.
  *
  * @param {NodeJS.ReadableStream} stream The source stream.
+ * @param {CanBeNil<ReadStreamOptions>} [options] Custom options.
  * 
  * @returns {Promise<Buffer>} The promise with the read data.
  */
-export function readStream(stream: NodeJS.ReadableStream): Promise<Buffer> {
+export function readStream(stream: NodeJS.ReadableStream, options?: CanBeNil<ReadStreamOptions>): Promise<Buffer> {
+  const maxLength = options?.maxLength;
+  if (maxLength) {
+    if (typeof maxLength !== 'number') {
+      throw new TypeError('options.maxLength must be a number');
+    }
+
+    if (maxLength < 0) {
+      throw new TypeError('options.maxLength must be a greater than or equal 0');
+    }
+  }
+
+  let concatData: (data: Buffer, chunk: Buffer) => Buffer;
+  if (maxLength) {
+    // with max length
+    concatData = (d, c) => {
+      if (d.length + c.length > maxLength) {
+        throw new EntityTooLargeError();
+      }
+
+      return Buffer.concat([d, c]);
+    };
+  } else {
+    concatData = (d, c) => Buffer.concat([d, c]);
+  }
+
   return new Promise((resolve, reject) => {
     stream.once('error', err => {
       reject(err);
@@ -35,7 +74,7 @@ export function readStream(stream: NodeJS.ReadableStream): Promise<Buffer> {
 
     stream.on('data', (chunk: Buffer) => {
       try {
-        data = Buffer.concat([data, chunk]);
+        data = concatData(data, chunk);
       } catch (e) {
         reject(e);
       }

@@ -18,22 +18,81 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import { Middleware } from 'flitz';
+import querystring from 'querystring';
+import { CanBeNil, Middleware, NextFunction, Request, RequestHandler, Response } from 'flitz';
+import { EntityTooLargeError } from './errors';
 import { readStream } from './streams';
+
+/**
+ * Options for 'body()' function.
+ */
+export interface BodyOptions {
+  /**
+   * Defines the maximum size of the body, in bytes.
+   */
+  maxLength?: CanBeNil<number>;
+  /**
+   * A custom handler, to tell the client, that the body is too big.
+   */
+  onMaxLengthReached?: CanBeNil<RequestHandler>;
+}
+
+/**
+ * Options for 'form()' function.
+ */
+export interface FormOptions extends BodyOptions {
+}
+
+/**
+ * Options for 'json()' function.
+ */
+export interface JsonOptions extends BodyOptions {
+}
+
+/**
+ * Options for 'string()' function.
+ */
+export interface StringOptions extends BodyOptions {
+}
 
 /**
  * Creates a new middleware that reads the complete
  * request body and writes the data to 'body' property
  * of request context.
  * 
+ * @params {BodyOptions} [options] Custom options.
+ * 
  * @returns {Middleware} The new middleware.
  */
-export function body(): Middleware {
-  return async (req, res, next) => {
-    req.body = await readStream(req);
+export function body(options?: BodyOptions): Middleware {
+  return withEntityTooLarge(async (req, res, next) => {
+    req.body = await readStream(req, {
+      maxLength: options?.maxLength
+    });
 
     next();
-  };
+  }, options?.onMaxLengthReached);
+}
+
+/**
+ * Creates a new middleware that reads the complete
+ * request body and writes the data as key / value pairs
+ * to 'body' property of request context.
+ * 
+ * @params {FormOptions} [options] Custom options.
+ * 
+ * @returns {Middleware} The new middleware.
+ */
+export function form(options?: FormOptions): Middleware {
+  return withEntityTooLarge(async (req, res, next) => {
+    req.body = querystring.parse(
+      (await readStream(req, {
+        maxLength: options?.maxLength
+      })).toString('utf8')
+    );
+
+    next();
+  }, options?.onMaxLengthReached);
 }
 
 /**
@@ -41,16 +100,20 @@ export function body(): Middleware {
  * request body and writes the data as JSON object
  * to 'body' property of request context.
  * 
+ * @params {JsonOptions} [options] Custom options.
+ * 
  * @returns {Middleware} The new middleware.
  */
-export function json(): Middleware {
-  return async (req, res, next) => {
-    const data = await readStream(req);
+export function json(options?: JsonOptions): Middleware {
+  return withEntityTooLarge(async (req, res, next) => {
+    const data = await readStream(req, {
+      maxLength: options?.maxLength
+    });
 
     req.body = data.length ? JSON.parse(data.toString('utf8')) : null;
 
     next();
-  };
+  }, options?.onMaxLengthReached);
 }
 
 /**
@@ -58,12 +121,44 @@ export function json(): Middleware {
  * request body and writes the data as string
  * to 'body' property of request context.
  * 
+ * @params {StringOptions} [options] Custom options.
+ * 
  * @returns {Middleware} The new middleware.
  */
-export function string(): Middleware {
-  return async (req, res, next) => {
-    req.body = (await readStream(req)).toString('utf8');
+export function string(options?: StringOptions): Middleware {
+  return withEntityTooLarge(async (req, res, next) => {
+    req.body = (await readStream(req, {
+      maxLength: options?.maxLength
+    })).toString('utf8');
 
     next();
+  }, options?.onMaxLengthReached);
+}
+
+function withEntityTooLarge(
+  action: (request: Request, response: Response, next: NextFunction) => Promise<void>,
+  onEntityTooLarge: CanBeNil<RequestHandler>
+): Middleware {
+  if (!onEntityTooLarge) {
+    // default handler
+    onEntityTooLarge = async (req, res) => {
+      if (!res.headersSent) {
+        res.writeHead(413);
+      }
+
+      res.end();
+    };
+  }
+
+  return async (req, res, next) => {
+    try {
+      await action(req, res, next);
+    } catch (err) {
+      if (err instanceof EntityTooLargeError) {
+        await onEntityTooLarge!(req, res);
+      } else {
+        throw err;
+      }
+    }
   };
 }
