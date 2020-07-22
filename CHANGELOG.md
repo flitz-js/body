@@ -1,6 +1,6 @@
 # @flitz/body
 
-## 0.6.1
+## 0.6.2
 
 * [BREAKING CHANGE]: `maxLength` => `max`
 
