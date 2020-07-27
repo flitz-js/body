@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/@flitz/body.svg)](https://www.npmjs.com/package/@flitz/body) [![supported flitz version](https://img.shields.io/static/v1?label=flitz&message=0.8.0%2B&color=blue)](https://github.com/flitz-js/flitz) [![last build](https://img.shields.io/github/workflow/status/flitz-js/body/Publish)](https://github.com/flitz-js/body/actions?query=workflow%3APublish)
+[![npm](https://img.shields.io/npm/v/@flitz/body.svg)](https://www.npmjs.com/package/@flitz/body) [![supported flitz version](https://img.shields.io/static/v1?label=flitz&message=0.14.0%2B&color=blue)](https://github.com/flitz-js/flitz) [![last build](https://img.shields.io/github/workflow/status/flitz-js/body/Publish)](https://github.com/flitz-js/body/actions?query=workflow%3APublish)
 
 # @flitz/body
 
