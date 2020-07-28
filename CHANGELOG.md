@@ -1,6 +1,6 @@
 # @flitz/body
 
-## 1.0.0
+## 1.0.1
 
 * first stable release
 
