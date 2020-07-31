@@ -1,6 +1,6 @@
 {
   "name": "@flitz/body",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "flitz middleware for parsing and handling request bodies.",
   "private": false,
   "main": "lib/index.js",
@@ -8,7 +8,9 @@
     "index.d.ts",
     "lib/**/*",
     "!lib/sandbox/**/*",
-    "!**/*.map"
+    "!**/*.map",
+    "!**/__tests__/**/*.+(ts|tsx|js)",
+    "!lib/setupTests.*"
   ],
   "scripts": {
     "build": "del ./lib && tsc -p ./tsconfig.json",

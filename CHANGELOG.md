@@ -1,5 +1,9 @@
 # @flitz/body
 
+## 1.1.0
+
+* cleanup package
+
 ## 1.0.1
 
 * first stable release
