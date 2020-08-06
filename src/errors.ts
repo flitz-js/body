@@ -23,3 +23,17 @@
  */
 export class EntityTooLargeError extends Error {
 }
+
+/**
+ * A parse error.
+ */
+export class ParseError extends Error {
+  /**
+   * Initializes a new instance of that class.
+   *
+   * @param {any} innerError The inner error.
+   */
+  public constructor(public readonly innerError: any) {
+    super();
+  }
+}

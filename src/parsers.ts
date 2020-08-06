@@ -20,7 +20,8 @@
 
 import querystring from 'querystring';
 import { CanBeNil, Middleware, NextFunction, Request, RequestHandler, Response } from 'flitz';
-import { EntityTooLargeError } from './errors';
+import { safeLoad as loadYaml, YAMLException } from 'js-yaml';
+import { EntityTooLargeError, ParseError } from './errors';
 import { readStream } from './streams';
 
 /**
@@ -38,6 +39,16 @@ export interface BodyOptions {
 }
 
 /**
+ * Body options with parse error handling.
+ */
+export interface BodyOptionsWithParseErrorHandling extends BodyOptions {
+  /**
+   * A custom parse error handler.
+   */
+  onParseFailed?: CanBeNil<ParseErrorHandler>;
+}
+
+/**
  * Options for 'form()' function.
  */
 export interface FormOptions extends BodyOptions {
@@ -46,7 +57,32 @@ export interface FormOptions extends BodyOptions {
 /**
  * Options for 'json()' function.
  */
-export interface JsonOptions extends BodyOptions {
+export interface JsonOptions extends BodyOptionsWithParseErrorHandling {
+}
+
+/**
+ * Handles a body parse error.
+ * 
+ * @param {ParseErrorHandlerContext} context The context.
+ */
+export type ParseErrorHandler = (context: ParseErrorHandlerContext) => Promise<any>;
+
+/**
+ * A context of a parse error handler.
+ */
+export interface ParseErrorHandlerContext {
+  /**
+   * The error.
+   */
+  error: ParseError;
+  /**
+   * The request context.
+   */
+  request: Request;
+  /**
+   * The response context.
+   */
+  response: Response;
 }
 
 /**
@@ -56,15 +92,21 @@ export interface StringOptions extends BodyOptions {
 }
 
 /**
+ * Options for 'yaml()' function.
+ */
+export interface YamlOptions extends BodyOptionsWithParseErrorHandling {
+}
+
+/**
  * Creates a new middleware that reads the complete
  * request body and writes the data to 'body' property
  * of request context.
  * 
- * @params {BodyOptions} [options] Custom options.
+ * @params {CanBeNil<BodyOptions>} [options] Custom options.
  * 
  * @returns {Middleware} The new middleware.
  */
-export function body(options?: BodyOptions): Middleware {
+export function body(options?: CanBeNil<BodyOptions>): Middleware {
   return withEntityTooLarge(async (req, res, next) => {
     req.body = await readStream(req, {
       max: options?.max
@@ -79,11 +121,11 @@ export function body(options?: BodyOptions): Middleware {
  * request body and writes the data as key / value pairs
  * to 'body' property of request context.
  * 
- * @params {FormOptions} [options] Custom options.
+ * @params {CanBeNil<FormOptions>} [options] Custom options.
  * 
  * @returns {Middleware} The new middleware.
  */
-export function form(options?: FormOptions): Middleware {
+export function form(options?: CanBeNil<FormOptions>): Middleware {
   return withEntityTooLarge(async (req, res, next) => {
     req.body = querystring.parse(
       (await readStream(req, {
@@ -95,24 +137,49 @@ export function form(options?: FormOptions): Middleware {
   }, options?.onMaxReached);
 }
 
+function getParseErrorHandler(options: CanBeNil<BodyOptionsWithParseErrorHandling>): ParseErrorHandler {
+  let onParseFailed = options?.onParseFailed;
+  if (!onParseFailed) {
+    onParseFailed = async (ctx) => {
+      if (!ctx.response.headersSent) {
+        ctx.response.writeHead(400);
+      }
+
+      ctx.response.end();
+    };
+  }
+
+  return onParseFailed;
+}
+
 /**
  * Creates a new middleware that reads the complete
  * request body and writes the data as JSON object
  * to 'body' property of request context.
  * 
- * @params {JsonOptions} [options] Custom options.
+ * @params {CanBeNil<JsonOptions>} [options] Custom options.
  * 
  * @returns {Middleware} The new middleware.
  */
-export function json(options?: JsonOptions): Middleware {
-  return withEntityTooLarge(async (req, res, next) => {
-    const data = await readStream(req, {
+export function json(options?: CanBeNil<JsonOptions>): Middleware {
+  const onParseFailed = getParseErrorHandler(options);
+
+  return withEntityTooLarge(async (request, response, next) => {
+    const data = await readStream(request, {
       max: options?.max
     });
 
-    req.body = data.length ? JSON.parse(data.toString('utf8')) : null;
+    try {
+      request.body = data.length ? JSON.parse(data.toString('utf8')) : null;
 
-    next();
+      next();
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        await onParseFailed({ error: new ParseError(e), request, response });
+      } else {
+        throw e;
+      }
+    }
   }, options?.onMaxReached);
 }
 
@@ -121,17 +188,48 @@ export function json(options?: JsonOptions): Middleware {
  * request body and writes the data as string
  * to 'body' property of request context.
  * 
- * @params {StringOptions} [options] Custom options.
+ * @params {CanBeNil<StringOptions>} [options] Custom options.
  * 
  * @returns {Middleware} The new middleware.
  */
-export function string(options?: StringOptions): Middleware {
+export function string(options?: CanBeNil<StringOptions>): Middleware {
   return withEntityTooLarge(async (req, res, next) => {
     req.body = (await readStream(req, {
       max: options?.max
     })).toString('utf8');
 
     next();
+  }, options?.onMaxReached);
+}
+
+/**
+ * Creates a new middleware that reads the complete
+ * request body as YAML document and writes the data as JSON object
+ * to 'body' property of request context.
+ * 
+ * @params {CanBeNil<YamlOptions>} [options] Custom options.
+ * 
+ * @returns {Middleware} The new middleware.
+ */
+export function yaml(options?: CanBeNil<YamlOptions>): Middleware {
+  const onParseFailed = getParseErrorHandler(options);
+
+  return withEntityTooLarge(async (request, response, next) => {
+    const data = await readStream(request, {
+      max: options?.max
+    });
+
+    try {
+      request.body = data.length ? loadYaml(data.toString('utf8')) : null;
+
+      next();
+    } catch (e) {
+      if (e instanceof YAMLException) {
+        await onParseFailed({ error: new ParseError(e), request, response });
+      } else {
+        throw e;
+      }
+    }
   }, options?.onMaxReached);
 }
 

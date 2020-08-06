@@ -1,5 +1,12 @@
 # @flitz/body
 
+## 1.2.0
+
+* add [YAML](https://www.npmjs.com/package/js-yaml) support
+* [BREAKING CHANGE]: when parsing wrong JSON or YAML, 400 is returned by default
+* can handle parse errors now
+* `options` of parsers can also be `(null)` now
+
 ## 1.1.0
 
 * cleanup package

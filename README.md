@@ -67,7 +67,28 @@ const run = async () => {
 
   //             👇👇👇
   app.post('/', [ json() ], async (req, res) => {
-    res.write('Your body as JSON object: ' + JSON.stringify(req.body, null, 2));
+    res.write('Your JSON body as JavaScript object: ' + JSON.stringify(req.body, null, 2));
+    res.end();
+  });
+
+  await app.listen(3000);
+};
+
+run();
+```
+
+### YAML
+
+```typescript
+import flitz from 'flitz';
+import { yaml } from '@flitz/body';
+
+const run = async () => {
+  const app = flitz();
+
+  //             👇👇👇
+  app.post('/', [ yaml() ], async (req, res) => {
+    res.write('Your YAML body as JavaScript object: ' + JSON.stringify(req.body, null, 2));
     res.end();
   });
 
@@ -131,6 +152,12 @@ app.post('/', [ body({ max: 128 * 1024 * 1024 }) ], async (req, res) => {
 ## TypeScript
 
 TypeScript is optionally supported. The module contains its own [definition files](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html).
+
+## Credits
+
+The module makes use of:
+
+* [JS-YAML](https://github.com/nodeca/js-yaml) by [Nodeca](https://github.com/nodeca)
 
 ## License
 
