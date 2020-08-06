@@ -90,7 +90,7 @@ it('should return 400 on invalid JSON', async () => {
     .send('{ length: 999 ');
 });
 
-it('should return 406 by custom parse handler on invalid JSON', async () => {
+it('should return 406 by custom parse error handler on invalid JSON', async () => {
   const app = global.createTestApp();
 
   const onParseFailed: ParseErrorHandler = async (ctx) => {

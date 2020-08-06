@@ -90,7 +90,7 @@ it('should return 400 on invalid YAML', async () => {
     .send('"length.: ab"c ');
 });
 
-it('should return 406 by custom parse handler on invalid YAML', async () => {
+it('should return 406 by custom parse error handler on invalid YAML', async () => {
   const app = global.createTestApp();
 
   const onParseFailed: ParseErrorHandler = async (ctx) => {
