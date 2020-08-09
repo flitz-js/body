@@ -130,7 +130,7 @@ export function form(options?: CanBeNil<FormOptions>): Middleware {
     req.body = querystring.parse(
       (await readStream(req, {
         max: options?.max
-      })).toString('utf8')
+      })).toString('ascii')
     );
 
     next();

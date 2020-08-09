@@ -1,6 +1,10 @@
 # @flitz/body
 
-## 1.2.0
+## 3.0.0
+
+* [BREAKING CHANGE]: `form()` parses input binary as ASCII now
+
+## 2.0.0
 
 * add [YAML](https://www.npmjs.com/package/js-yaml) support
 * [BREAKING CHANGE]: when parsing wrong JSON or YAML, 400 is returned by default
