@@ -13,7 +13,7 @@ it('should parse request body to a key/value pair object', async () => {
     .post('/')
     .parse(global.parseBody)
     .expect(200)
-    .send('a=5979&b=ÄöÜ');
+    .send('a=5979&b=%C3%84%C3%B6%C3%9C');
 
   expect(Buffer.isBuffer(response.body)).toBe(true);
   expect(response.body.toString('utf8')).toBe('typeof: object b=ÄöÜ; a=5979');
